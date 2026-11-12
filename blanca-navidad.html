@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenador Ukelele Concierto - Blanca Navidad (White Christmas)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --f1: #3b82f6;
+      --f2: #10b981;
+      --f3: #f59e0b;
+      --f4: #ec4899;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); margin: 0; padding: 15px 15px 150px 15px; }
+    .container { max-width: 1050px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    h1 { margin: 0; font-size: 1.3rem; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    button { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.82rem; }
+    button:hover { filter: brightness(1.1); }
+    button.secondary { background: #334155; color: var(--text); }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; background: var(--card); padding: 10px 14px; border-radius: 10px; margin-bottom: 15px; font-size: 0.78rem; align-items: center; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 4px; }
+
+    .panel { background: var(--card); border-radius: 12px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-bottom: 15px; }
+    .chord-pills { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .pill { background: #0f172a; color: var(--text); border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
+    .pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    .section-title { color: var(--accent); font-size: 1rem; margin: 18px 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .section-title:first-child { margin-top: 0; }
+    .line-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 12px; }
+
+    .measure { position: relative; background: #0f172a; border: 2px solid #334155; border-radius: 8px; padding: 8px 10px; cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; justify-content: space-between; }
+    .measure:hover { border-color: var(--accent); }
+    .measure.playing { border-color: var(--accent); background: rgba(245, 158, 11, 0.18); transform: scale(1.02); z-index: 20; }
+    .m-chord { font-size: 1.15rem; font-weight: 800; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+    .m-beats { font-size: 0.7rem; color: var(--muted); font-weight: normal; }
+    .m-lyric { font-size: 0.92rem; margin: 6px 0; color: #f1f5f9; line-height: 1.3; border-bottom: 1px dashed transparent; }
+    .m-lyric:focus { outline: none; border-bottom: 1px dashed var(--accent); background: rgba(255,255,255,0.05); }
+    .m-hint { font-size: 0.72rem; color: #64748b; font-style: italic; }
+    .strum-bar { display: flex; gap: 3px; margin-top: 6px; }
+    .beat-dot { height: 5px; flex: 1; background: #334155; border-radius: 3px; }
+
+    /* POPOVER FLOTANTE (SE ACTIVA AL TOCAR EL DIAGRAMA EN LA BARRA INFERIOR) */
+    .floating-tooltip {
+      position: fixed;
+      z-index: 90;
+      background: #0b1120;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px;
+      width: 210px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+      text-align: center;
+      pointer-events: auto;
+      display: none;
+      animation: popIn 0.15s ease-out;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(6px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .ft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 4px; }
+    .ft-title { font-weight: 800; color: var(--accent); font-size: 1rem; }
+    .ft-close { background: transparent; color: var(--muted); border: none; font-size: 1rem; padding: 0 4px; cursor: pointer; }
+    .ft-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 6px; line-height: 1.3; }
+
+    /* BARRA INFERIOR FIJA SIEMPRE VISIBLE (HUD MÓVIL) */
+    .sticky-hud {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+      border-top: 2px solid var(--accent);
+      padding: 8px 14px;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 -6px 25px rgba(0,0,0,0.6);
+    }
+    .hud-left { display: flex; align-items: center; gap: 10px; }
+    .hud-svg {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      position: relative;
+    }
+    .hud-svg:hover { transform: scale(1.05); background: #26354d; }
+    .hud-svg::after {
+      content: "🔍";
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 0.65rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 4px;
+      padding: 1px 3px;
+    }
+    .hud-info { max-width: 220px; }
+    .hud-chord { font-size: 1.15rem; font-weight: 800; color: var(--accent); margin: 0; }
+    .hud-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 2px; line-height: 1.2; }
+    .hud-actions { display: flex; gap: 6px; }
+
+    /* Modal para pegar letra */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 15px; }
+    .modal.open { display: flex; }
+    .modal-box { background: var(--card); max-width: 500px; width: 100%; border-radius: 12px; padding: 18px; border: 1px solid #475569; }
+    textarea { width: 100%; height: 160px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.85rem; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>🎄 Blanca Navidad (White Christmas) — Ukelele Interactivo</h1>
+      <div class="subtitle"><a href="./" style="color:var(--muted);">← Canciones</a> · Toca cualquier cajita para actualizar la barra inferior, y toca la imagen del acorde abajo para ampliar</div>
+    </div>
+    <div class="controls">
+      <button id="playBtn" onclick="togglePlay()">▶ Guía (66 BPM)</button>
+      <button class="secondary" onclick="strumCurrent()">🔊 Rasguear</button>
+      <button class="secondary" onclick="openModal()">✏️ Pegar Letra</button>
+    </div>
+  </header>
+
+  <div class="legend">
+    <strong>Dedos:</strong>
+    <span><i class="dot" style="background:var(--f1)"></i><b>1</b> Índice</span>
+    <span><i class="dot" style="background:var(--f2)"></i><b>2</b> Medio</span>
+    <span><i class="dot" style="background:var(--f3)"></i><b>3</b> Anular</span>
+    <span><i class="dot" style="background:var(--f4)"></i><b>4</b> Meñique</span>
+    <div class="chord-pills" id="chordSelector" style="margin-left:auto;"></div>
+  </div>
+
+  <!-- Panel Canción Completa -->
+  <div class="panel" id="songSheet">
+    <div class="section-title"><span>1. Parte A (frases 1 y 2)</span> <small>4 tiempos (↓↓↓↓) por tarjeta, salvo las de 2</small></div>
+    <div class="line-row" id="partA1"></div>
+
+    <div class="section-title"><span>2. Parte B (frases 3 y 4)</span> <small>Aquí aparecen C7 y Fm</small></div>
+    <div class="line-row" id="partB"></div>
+
+    <div class="section-title"><span>3. Parte A (frases 5 y 6)</span> <small>Igual que la Parte A</small></div>
+    <div class="line-row" id="partA2"></div>
+
+    <div class="section-title"><span>4. Final (frases 7 y 8)</span> <small>Termina lento en C</small></div>
+    <div class="line-row" id="ending"></div>
+  </div>
+</div>
+
+<!-- POPOVER FLOTANTE QUE APARECE AL DAR CLICK EN LA IMAGEN DE LA BARRA INFERIOR -->
+<div class="floating-tooltip" id="floatingTooltip">
+  <div class="ft-header">
+    <span class="ft-title" id="ftTitle">C (Do)</span>
+    <button class="ft-close" onclick="hideTooltip()">✕</button>
+  </div>
+  <div id="ftSvg"></div>
+  <div class="ft-desc" id="ftDesc"></div>
+</div>
+
+<!-- BARRA INFERIOR FIJA SIEMPRE VISIBLE -->
+<div class="sticky-hud">
+  <div class="hud-left">
+    <div class="hud-svg" id="hudSvg" onclick="toggleTooltipFromHud(event)" title="Toca para ver el acorde en grande"></div>
+    <div class="hud-info">
+      <div class="hud-chord" id="hudTitle">C (Do Mayor)</div>
+      <div class="hud-desc" id="hudDesc">Dedo 3 (Anular) en 1ª cuerda, traste 3.</div>
+    </div>
+  </div>
+  <div class="hud-actions">
+    <button class="secondary" onclick="strumCurrent()">🔊</button>
+    <button id="hudPlayBtn" onclick="togglePlay()">▶ Play</button>
+  </div>
+</div>
+
+<!-- Modal con Divisor Inteligente -->
+<div class="modal" id="lyricModal">
+  <div class="modal-box">
+    <h3 style="margin:0; color:var(--accent);">Pegar Letra Completa</h3>
+    <p style="font-size:0.8rem; color:var(--muted); margin:6px 0;">
+      Pega la letra con <b>una frase por línea</b> (8 frases, en inglés o en español). Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
+    </p>
+    <textarea id="bulkText" placeholder="Pega aquí la letra completa..."></textarea>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button class="secondary" onclick="closeModal()">Cancelar</button>
+      <button onclick="applyBulkLyrics()">Distribuir en Acordes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const openFreqs = [392.00, 261.63, 329.63, 440.00];
+
+  const BPM = 66;
+
+  const CHORDS = {
+    "C":   { title: "C (Do Mayor)", frets: [0,0,0,3], fingers: [0,0,0,3], desc: "Dedo 3 (Anular) en 1ª cuerda (A), traste 3." },
+    "Dm":  { title: "Dm (Re menor)", frets: [2,2,1,0], fingers: [2,3,1,0], desc: "Dedo 1 en 2ª (T1), Dedo 2 en 4ª (T2), Dedo 3 en 3ª (T2)." },
+    "G7":  { title: "G7 (Sol 7ma)", frets: [0,2,1,2], fingers: [0,2,1,3], desc: "Dedo 1 en 2ª (T1), Dedo 2 en 3ª (T2), Dedo 3 en 1ª (T2)." },
+    "F":   { title: "F (Fa Mayor)", frets: [2,0,1,0], fingers: [2,0,1,0], desc: "Dedo 1 en 2ª cuerda (T1) y Dedo 2 en 4ª cuerda (T2)." },
+    "C7":  { title: "C7 (Do 7ma)", frets: [0,0,0,1], fingers: [0,0,0,1], desc: "Dedo 1 (Índice) en 1ª cuerda (A), traste 1." },
+    "Fm":  { title: "Fm (Fa menor)", frets: [1,0,1,3], fingers: [1,0,2,4], desc: "Dedo 1 en 4ª (T1), Dedo 2 en 2ª (T1), Dedo 4 en 1ª (T3)." },
+    "Am":  { title: "Am (La menor)", frets: [2,0,0,0], fingers: [2,0,0,0], desc: "Dedo 2 (Medio) en 4ª cuerda (G), traste 2." }
+  };
+
+  const FINGER_COLORS = { 1: "#3b82f6", 2: "#10b981", 3: "#f59e0b", 4: "#ec4899" };
+
+  const SONG_MEASURES = [
+    // FRASE 1
+    { sec: "partA1", line: 1, chord: "C", beats: 4, text: "♪ frase 1", hint: "Entra suave en C" },
+    { sec: "partA1", line: 1, chord: "Dm", beats: 2, text: "♪ frase 1", hint: "Cambio rápido" },
+    { sec: "partA1", line: 1, chord: "G7", beats: 2, text: "♪ frase 1", hint: "Prepara la vuelta" },
+    { sec: "partA1", line: 1, chord: "C", beats: 4, text: "♪ frase 1", hint: "Resuelve en C" },
+    { sec: "partA1", line: 1, chord: "C", beats: 4, text: "♪ frase 1", hint: "Mantén C" },
+    // FRASE 2
+    { sec: "partA1", line: 2, chord: "F", beats: 4, text: "♪ frase 2", hint: "Cambia a F" },
+    { sec: "partA1", line: 2, chord: "G7", beats: 4, text: "♪ frase 2", hint: "Tensión en G7" },
+    { sec: "partA1", line: 2, chord: "C", beats: 4, text: "♪ frase 2", hint: "Vuelve a C" },
+    { sec: "partA1", line: 2, chord: "C", beats: 4, text: "♪ frase 2", hint: "Respira" },
+    // FRASE 3
+    { sec: "partB", line: 3, chord: "C7", beats: 4, text: "♪ frase 3", hint: "C7: un solo dedo" },
+    { sec: "partB", line: 3, chord: "C7", beats: 4, text: "♪ frase 3", hint: "Mantén C7" },
+    { sec: "partB", line: 3, chord: "F", beats: 4, text: "♪ frase 3", hint: "Cambia a F" },
+    { sec: "partB", line: 3, chord: "Fm", beats: 4, text: "♪ frase 3", hint: "Fm: el acorde 'nostálgico'" },
+    // FRASE 4
+    { sec: "partB", line: 4, chord: "C", beats: 4, text: "♪ frase 4", hint: "Vuelve a C" },
+    { sec: "partB", line: 4, chord: "Am", beats: 4, text: "♪ frase 4", hint: "Cambia a Am" },
+    { sec: "partB", line: 4, chord: "Dm", beats: 4, text: "♪ frase 4", hint: "Cambia a Dm" },
+    { sec: "partB", line: 4, chord: "G7", beats: 4, text: "♪ frase 4", hint: "G7 lleva de vuelta al inicio" },
+    // FRASE 5
+    { sec: "partA2", line: 5, chord: "C", beats: 4, text: "♪ frase 5", hint: "Entra suave en C" },
+    { sec: "partA2", line: 5, chord: "Dm", beats: 2, text: "♪ frase 5", hint: "Cambio rápido" },
+    { sec: "partA2", line: 5, chord: "G7", beats: 2, text: "♪ frase 5", hint: "Prepara la vuelta" },
+    { sec: "partA2", line: 5, chord: "C", beats: 4, text: "♪ frase 5", hint: "Resuelve en C" },
+    { sec: "partA2", line: 5, chord: "C", beats: 4, text: "♪ frase 5", hint: "Mantén C" },
+    // FRASE 6
+    { sec: "partA2", line: 6, chord: "F", beats: 4, text: "♪ frase 6", hint: "Cambia a F" },
+    { sec: "partA2", line: 6, chord: "G7", beats: 4, text: "♪ frase 6", hint: "Tensión en G7" },
+    { sec: "partA2", line: 6, chord: "C", beats: 4, text: "♪ frase 6", hint: "Vuelve a C" },
+    { sec: "partA2", line: 6, chord: "C", beats: 4, text: "♪ frase 6", hint: "Respira" },
+    // FRASE 7
+    { sec: "ending", line: 7, chord: "C7", beats: 4, text: "♪ frase 7", hint: "C7" },
+    { sec: "ending", line: 7, chord: "C7", beats: 4, text: "♪ frase 7", hint: "Mantén C7" },
+    { sec: "ending", line: 7, chord: "F", beats: 4, text: "♪ frase 7", hint: "Cambia a F" },
+    { sec: "ending", line: 7, chord: "Fm", beats: 4, text: "♪ frase 7", hint: "Fm" },
+    // FRASE 8
+    { sec: "ending", line: 8, chord: "C", beats: 4, text: "♪ frase 8", hint: "Vuelve a C" },
+    { sec: "ending", line: 8, chord: "Am", beats: 4, text: "♪ frase 8", hint: "Am" },
+    { sec: "ending", line: 8, chord: "Dm", beats: 2, text: "♪ frase 8", hint: "Dm" },
+    { sec: "ending", line: 8, chord: "G7", beats: 2, text: "♪ frase 8", hint: "Ralentiza" },
+    { sec: "ending", line: 8, chord: "C", beats: 4, text: "♪ frase 8", hint: "Rasgueo final largo" }
+  ];
+
+  let currentChord = "C";
+  let audioCtx = null;
+  let isPlaying = false;
+  let timer = null;
+  let stepIndex = 0;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playChordAudio(chordKey) {
+    initAudio();
+    const chord = CHORDS[chordKey];
+    if (!chord) return;
+    const now = audioCtx.currentTime;
+
+    chord.frets.forEach((fret, i) => {
+      const freq = openFreqs[i] * Math.pow(2, fret / 12);
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + i * 0.045);
+      gain.gain.setValueAtTime(0.001, now + i * 0.045);
+      gain.gain.linearRampToValueAtTime(0.22, now + i * 0.045 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.045 + 1.8);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.045);
+      osc.stop(now + i * 0.045 + 1.85);
+    });
+  }
+
+  function createChordSVG(chordKey, width = 140, height = 155) {
+    const c = CHORDS[chordKey];
+    const strings = ["G", "C", "E", "A"];
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 220 245">`;
+    for (let i = 0; i < 4; i++) {
+      const x = 40 + i * 46;
+      svg += `<text x="${x}" y="18" fill="#94a3b8" font-size="13" text-anchor="middle" font-weight="bold">${strings[i]}</text>`;
+      if (c.frets[i] === 0) svg += `<circle cx="${x}" cy="32" r="5.5" fill="none" stroke="#10b981" stroke-width="2.5"/>`;
+    }
+    svg += `<rect x="37" y="43" width="144" height="6" fill="#e2e8f0" rx="2"/>`;
+    for (let f = 1; f <= 4; f++) {
+      const y = 48 + f * 44;
+      svg += `<line x1="40" y1="${y}" x2="178" y2="${y}" stroke="#475569" stroke-width="2"/>`;
+      svg += `<text x="18" y="${y - 15}" fill="#64748b" font-size="12" text-anchor="middle">T${f}</text>`;
+    }
+    for (let i = 0; i < 4; i++) {
+      const x = 40 + i * 46;
+      svg += `<line x1="${x}" y1="48" x2="${x}" y2="224" stroke="#cbd5e1" stroke-width="${2.4 - i * 0.3}"/>`;
+    }
+    for (let i = 0; i < 4; i++) {
+      const fret = c.frets[i];
+      const finger = c.fingers[i];
+      if (fret > 0) {
+        const x = 40 + i * 46;
+        const y = 48 + (fret - 0.5) * 44;
+        const color = FINGER_COLORS[finger] || "#f59e0b";
+        svg += `<circle cx="${x}" cy="${y}" r="14" fill="${color}" stroke="#0f172a" stroke-width="2"/>`;
+        svg += `<text x="${x}" y="${y + 5}" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">${finger}</text>`;
+      }
+    }
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function updateTooltipContent(chordKey) {
+    const c = CHORDS[chordKey];
+    document.getElementById("ftTitle").innerText = c.title;
+    document.getElementById("ftSvg").innerHTML = createChordSVG(chordKey, 160, 175);
+    document.getElementById("ftDesc").innerText = c.desc;
+  }
+
+  function positionTooltipAboveHud() {
+    const tt = document.getElementById("floatingTooltip");
+    const hudSvg = document.getElementById("hudSvg");
+    const rect = hudSvg.getBoundingClientRect();
+    const ttWidth = 210;
+    const ttHeight = 255;
+
+    let top = rect.top - ttHeight - 12;
+    if (top < 10) top = 10;
+
+    let left = rect.left;
+    if (left + ttWidth > window.innerWidth - 10) {
+      left = window.innerWidth - ttWidth - 10;
+    }
+
+    tt.style.top = `${top}px`;
+    tt.style.left = `${Math.max(10, left)}px`;
+  }
+
+  // Abre o cierra el Popover únicamente cuando se hace clic en el diagrama de la barra inferior
+  function toggleTooltipFromHud(e) {
+    e.stopPropagation();
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") {
+      hideTooltip();
+    } else {
+      updateTooltipContent(currentChord);
+      tt.style.display = "block";
+      positionTooltipAboveHud();
+    }
+  }
+
+  function hideTooltip() {
+    document.getElementById("floatingTooltip").style.display = "none";
+  }
+
+  function selectChord(chordKey, playSound = true) {
+    currentChord = chordKey;
+    const c = CHORDS[chordKey];
+
+    // Solo actualiza la barra inferior fija (HUD)
+    document.getElementById("hudTitle").innerText = c.title;
+    document.getElementById("hudDesc").innerText = c.desc;
+    document.getElementById("hudSvg").innerHTML = createChordSVG(chordKey, 76, 82);
+
+    document.querySelectorAll(".pill").forEach(el => {
+      el.classList.toggle("active", el.dataset.chord === chordKey);
+    });
+
+    // Si el Popover ya estaba abierto por el usuario, actualiza su contenido al nuevo acorde
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") {
+      updateTooltipContent(chordKey);
+    }
+
+    if (playSound) playChordAudio(chordKey);
+  }
+
+  function strumCurrent() { playChordAudio(currentChord); }
+
+  function buildUI() {
+    const selector = document.getElementById("chordSelector");
+    Object.keys(CHORDS).forEach(k => {
+      const btn = document.createElement("button");
+      btn.className = "pill";
+      btn.dataset.chord = k;
+      btn.innerText = k;
+      btn.onclick = () => selectChord(k, true);
+      selector.appendChild(btn);
+    });
+
+    SONG_MEASURES.forEach((m, idx) => {
+      const container = document.getElementById(m.sec);
+      const div = document.createElement("div");
+      div.className = "measure";
+      div.id = `m-${idx}`;
+      div.onclick = (e) => {
+        if (e.target.classList.contains("m-lyric")) return;
+        stepIndex = idx;
+        highlightMeasure(idx);
+        selectChord(m.chord, true);
+      };
+
+      let dots = "";
+      for (let b = 0; b < m.beats; b++) dots += `<div class="beat-dot"></div>`;
+
+      div.innerHTML = `
+        <div class="m-chord"><span>${m.chord}</span><span class="m-beats">${m.beats} tiempos</span></div>
+        <div class="m-lyric" contenteditable="true" spellcheck="false" id="lyric-${idx}">${m.text}</div>
+        <div class="m-hint">${m.hint}</div>
+        <div class="strum-bar">${dots}</div>
+      `;
+      container.appendChild(div);
+    });
+
+    selectChord("C", false);
+  }
+
+  function highlightMeasure(idx) {
+    document.querySelectorAll(".measure").forEach(el => el.classList.remove("playing"));
+    const target = document.getElementById(`m-${idx}`);
+    if (target) {
+      target.classList.add("playing");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function togglePlay() {
+    const btn = document.getElementById("playBtn");
+    const hudBtn = document.getElementById("hudPlayBtn");
+    if (isPlaying) {
+      isPlaying = false;
+      clearTimeout(timer);
+      btn.innerText = "▶ Guía (66 BPM)";
+      hudBtn.innerText = "▶ Play";
+      return;
+    }
+    isPlaying = true;
+    btn.innerText = "⏸ Pausar";
+    hudBtn.innerText = "⏸ Pausa";
+    runStep();
+  }
+
+  function runStep() {
+    if (!isPlaying) return;
+    const item = SONG_MEASURES[stepIndex];
+    highlightMeasure(stepIndex);
+    selectChord(item.chord, true);
+    const beatDurationMs = (60 / BPM) * 1000;
+    const measureDuration = item.beats * beatDurationMs;
+    stepIndex = (stepIndex + 1) % SONG_MEASURES.length;
+    timer = setTimeout(runStep, measureDuration);
+  }
+
+  function openModal() { document.getElementById("lyricModal").classList.add("open"); }
+  function closeModal() { document.getElementById("lyricModal").classList.remove("open"); }
+
+  const LYRICS_KEY = "ukelele:blanca-navidad:lyrics";
+
+  function splitWords(line, parts) {
+    if (!line) return Array(parts).fill("...");
+    const words = line.split(/\s+/);
+    const res = [];
+    let idx = 0;
+    for (let i = 0; i < parts; i++) {
+      const take = Math.ceil((words.length - idx) / (parts - i));
+      res.push(words.slice(idx, idx + take).join(" ") || "...");
+      idx += take;
+    }
+    return res;
+  }
+
+  // Reparte cada frase pegada entre las tarjetas que tienen ese número de frase
+  function distributeLyrics(lines) {
+    const lineCount = Math.max(...SONG_MEASURES.map(m => m.line));
+    for (let n = 1; n <= lineCount; n++) {
+      const idxs = SONG_MEASURES.map((m, i) => m.line === n ? i : -1).filter(i => i >= 0);
+      const chunks = splitWords(lines[n - 1] || "", idxs.length);
+      idxs.forEach((i, k) => { document.getElementById(`lyric-${i}`).innerText = chunks[k]; });
+    }
+  }
+
+  function applyBulkLyrics() {
+    const raw = document.getElementById("bulkText").value.trim();
+    if (!raw) return closeModal();
+
+    const lines = raw.split(/\r?\n/)
+      .map(l => l.replace(/\[.*?\]/g, "").trim())
+      .filter(l => l.length > 0);
+
+    distributeLyrics(lines);
+    try { localStorage.setItem(LYRICS_KEY, JSON.stringify(lines)); } catch (e) {}
+
+    closeModal();
+  }
+
+  window.addEventListener("resize", () => {
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") positionTooltipAboveHud();
+  });
+
+  buildUI();
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(LYRICS_KEY) || "null");
+    if (Array.isArray(saved)) {
+      distributeLyrics(saved);
+      document.getElementById("bulkText").value = saved.join("\n");
+    }
+  } catch (e) {}
+</script>
+</body>
+</html>
