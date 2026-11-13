@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenador Ukelele Concierto - Somewhere Only We Know</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --f1: #3b82f6;
+      --f2: #10b981;
+      --f3: #f59e0b;
+      --f4: #ec4899;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); margin: 0; padding: 15px 15px 150px 15px; }
+    .container { max-width: 1050px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+    h1 { margin: 0; font-size: 1.3rem; color: var(--accent); }
+    .subtitle { color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    button { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.82rem; }
+    button:hover { filter: brightness(1.1); }
+    button.secondary { background: #334155; color: var(--text); }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; background: var(--card); padding: 10px 14px; border-radius: 10px; margin-bottom: 15px; font-size: 0.78rem; align-items: center; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 4px; }
+
+    .panel { background: var(--card); border-radius: 12px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-bottom: 15px; }
+    .chord-pills { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .pill { background: #0f172a; color: var(--text); border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
+    .pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    .section-title { color: var(--accent); font-size: 1rem; margin: 18px 0 8px 0; border-bottom: 1px solid #334155; padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .section-title:first-child { margin-top: 0; }
+    .line-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 12px; }
+
+    .measure { position: relative; background: #0f172a; border: 2px solid #334155; border-radius: 8px; padding: 8px 10px; cursor: pointer; transition: 0.15s; display: flex; flex-direction: column; justify-content: space-between; }
+    .measure:hover { border-color: var(--accent); }
+    .measure.playing { border-color: var(--accent); background: rgba(245, 158, 11, 0.18); transform: scale(1.02); z-index: 20; }
+    .m-chord { font-size: 1.15rem; font-weight: 800; color: var(--accent); display: flex; justify-content: space-between; align-items: center; }
+    .m-beats { font-size: 0.7rem; color: var(--muted); font-weight: normal; }
+    .m-lyric { font-size: 0.92rem; margin: 6px 0; color: #f1f5f9; line-height: 1.3; border-bottom: 1px dashed transparent; }
+    .m-lyric:focus { outline: none; border-bottom: 1px dashed var(--accent); background: rgba(255,255,255,0.05); }
+    .m-hint { font-size: 0.72rem; color: #64748b; font-style: italic; }
+    .strum-bar { display: flex; gap: 3px; margin-top: 6px; }
+    .beat-dot { height: 5px; flex: 1; background: #334155; border-radius: 3px; }
+
+    /* POPOVER FLOTANTE (SE ACTIVA AL TOCAR EL DIAGRAMA EN LA BARRA INFERIOR) */
+    .floating-tooltip {
+      position: fixed;
+      z-index: 90;
+      background: #0b1120;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px;
+      width: 210px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.85);
+      text-align: center;
+      pointer-events: auto;
+      display: none;
+      animation: popIn 0.15s ease-out;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(6px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .ft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border-bottom: 1px solid #1e293b; padding-bottom: 4px; }
+    .ft-title { font-weight: 800; color: var(--accent); font-size: 1rem; }
+    .ft-close { background: transparent; color: var(--muted); border: none; font-size: 1rem; padding: 0 4px; cursor: pointer; }
+    .ft-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 6px; line-height: 1.3; }
+
+    /* BARRA INFERIOR FIJA SIEMPRE VISIBLE (HUD MÓVIL) */
+    .sticky-hud {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+      border-top: 2px solid var(--accent);
+      padding: 8px 14px;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 -6px 25px rgba(0,0,0,0.6);
+    }
+    .hud-left { display: flex; align-items: center; gap: 10px; }
+    .hud-svg {
+      background: #1e293b;
+      border-radius: 8px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      position: relative;
+    }
+    .hud-svg:hover { transform: scale(1.05); background: #26354d; }
+    .hud-svg::after {
+      content: "🔍";
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 0.65rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 4px;
+      padding: 1px 3px;
+    }
+    .hud-info { max-width: 220px; }
+    .hud-chord { font-size: 1.15rem; font-weight: 800; color: var(--accent); margin: 0; }
+    .hud-desc { font-size: 0.75rem; color: #cbd5e1; margin-top: 2px; line-height: 1.2; }
+    .hud-actions { display: flex; gap: 6px; }
+
+    /* Modal para pegar letra */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; padding: 15px; }
+    .modal.open { display: flex; }
+    .modal-box { background: var(--card); max-width: 500px; width: 100%; border-radius: 12px; padding: 18px; border: 1px solid #475569; }
+    textarea { width: 100%; height: 160px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 8px; padding: 10px; font-size: 0.85rem; margin: 10px 0; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>🌳 Somewhere Only We Know (Keane) — Ukelele Interactivo</h1>
+      <div class="subtitle"><a href="./" style="color:var(--muted);">← Canciones</a> · Rasgueo <b>↓ ↓↑ ↑↓↑</b> · Toca cualquier cajita para actualizar la barra inferior, y toca la imagen del acorde abajo para ampliar</div>
+    </div>
+    <div class="controls">
+      <button id="playBtn" onclick="togglePlay()">▶ Guía (86 BPM)</button>
+      <button class="secondary" onclick="strumCurrent()">🔊 Rasguear</button>
+      <button class="secondary" onclick="openModal()">✏️ Pegar Letra</button>
+    </div>
+  </header>
+
+  <div class="legend">
+    <strong>Dedos:</strong>
+    <span><i class="dot" style="background:var(--f1)"></i><b>1</b> Índice</span>
+    <span><i class="dot" style="background:var(--f2)"></i><b>2</b> Medio</span>
+    <span><i class="dot" style="background:var(--f3)"></i><b>3</b> Anular</span>
+    <span><i class="dot" style="background:var(--f4)"></i><b>4</b> Meñique</span>
+    <div class="chord-pills" id="chordSelector" style="margin-left:auto;"></div>
+  </div>
+
+  <!-- Panel Canción Completa -->
+  <div class="panel" id="songSheet">
+    <div class="section-title"><span>1. Estrofa 1 (líneas 1–4)</span> <small>A y C#m, luego Bm y D: 4 tiempos cada uno</small></div>
+    <div class="line-row" id="verse1"></div>
+
+    <div class="section-title"><span>2. Pre-coro (líneas 5–8)</span> <small>4 acordes por línea, 2 tiempos cada uno</small></div>
+    <div class="line-row" id="pre1"></div>
+
+    <div class="section-title"><span>3. Coro (líneas 9–12)</span> <small>Empieza en D</small></div>
+    <div class="line-row" id="chorus1"></div>
+
+    <div class="section-title"><span>4. Estrofa 2 (líneas 13–16)</span> <small>Igual que la Estrofa 1</small></div>
+    <div class="line-row" id="verse2"></div>
+
+    <div class="section-title"><span>5. Pre-coro (líneas 17–20)</span> <small>Igual que el primer pre-coro</small></div>
+    <div class="line-row" id="pre2"></div>
+
+    <div class="section-title"><span>6. Coro (líneas 21–24)</span> <small>Igual que el primer coro</small></div>
+    <div class="line-row" id="chorus2"></div>
+
+    <div class="section-title"><span>7. Coro final (líneas 25–28)</span> <small>Termina en A, más lento</small></div>
+    <div class="line-row" id="chorus3"></div>
+  </div>
+</div>
+
+<!-- POPOVER FLOTANTE QUE APARECE AL DAR CLICK EN LA IMAGEN DE LA BARRA INFERIOR -->
+<div class="floating-tooltip" id="floatingTooltip">
+  <div class="ft-header">
+    <span class="ft-title" id="ftTitle">A (La)</span>
+    <button class="ft-close" onclick="hideTooltip()">✕</button>
+  </div>
+  <div id="ftSvg"></div>
+  <div class="ft-desc" id="ftDesc"></div>
+</div>
+
+<!-- BARRA INFERIOR FIJA SIEMPRE VISIBLE -->
+<div class="sticky-hud">
+  <div class="hud-left">
+    <div class="hud-svg" id="hudSvg" onclick="toggleTooltipFromHud(event)" title="Toca para ver el acorde en grande"></div>
+    <div class="hud-info">
+      <div class="hud-chord" id="hudTitle">A (La Mayor)</div>
+      <div class="hud-desc" id="hudDesc">Dedo 3 (Anular) en 1ª cuerda, traste 3.</div>
+    </div>
+  </div>
+  <div class="hud-actions">
+    <button class="secondary" onclick="strumCurrent()">🔊</button>
+    <button id="hudPlayBtn" onclick="togglePlay()">▶ Play</button>
+  </div>
+</div>
+
+<!-- Modal con Divisor Inteligente -->
+<div class="modal" id="lyricModal">
+  <div class="modal-box">
+    <h3 style="margin:0; color:var(--accent);">Pegar Letra Completa</h3>
+    <p style="font-size:0.8rem; color:var(--muted); margin:6px 0;">
+      Pega la letra con <b>una frase por línea</b>, en el orden de la canción y repitiendo los coros (28 líneas: el número de cada tarjeta indica su línea). Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
+    </p>
+    <textarea id="bulkText" placeholder="Pega aquí la letra completa..."></textarea>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button class="secondary" onclick="closeModal()">Cancelar</button>
+      <button onclick="applyBulkLyrics()">Distribuir en Acordes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const openFreqs = [392.00, 261.63, 329.63, 440.00];
+
+  const BPM = 86;
+
+  const CHORDS = {
+    "A":   { title: "A (La Mayor)", frets: [2,1,0,0], fingers: [2,1,0,0], desc: "Dedo 1 en 3ª cuerda (T1) y Dedo 2 en 4ª cuerda (T2)." },
+    "C#m": { title: "C#m (Do# menor)", frets: [1,1,0,4], fingers: [1,1,0,4], desc: "Dedo 1 cejilla en 4ª y 3ª (T1), Dedo 4 en 1ª (T4)." },
+    "Bm":  { title: "Bm (Si menor)", frets: [4,2,2,2], fingers: [3,1,1,1], desc: "Dedo 1 cejilla en T2 (3ª, 2ª y 1ª), Dedo 3 en 4ª (T4)." },
+    "D":   { title: "D (Re Mayor)", frets: [2,2,2,0], fingers: [1,2,3,0], desc: "Dedos 1, 2 y 3 en el traste 2 de las cuerdas 4ª, 3ª y 2ª." },
+    "F#m": { title: "F#m (Fa# menor)", frets: [2,1,2,0], fingers: [2,1,3,0], desc: "Dedo 1 en 3ª (T1), Dedo 2 en 4ª (T2), Dedo 3 en 2ª (T2)." },
+    "E7":  { title: "E7 (Mi 7ma)", frets: [1,2,0,2], fingers: [1,2,0,3], desc: "Versión fácil del E. Dedo 1 en 4ª (T1), Dedo 2 en 3ª (T2), Dedo 3 en 1ª (T2)." }
+  };
+
+  const FINGER_COLORS = { 1: "#3b82f6", 2: "#10b981", 3: "#f59e0b", 4: "#ec4899" };
+
+  const SONG_MEASURES = [
+    // VERSE1
+    { sec: "verse1", line: 1, chord: "A", beats: 4, text: "♪ línea 1", hint: "Línea 1 · inicio" },
+    { sec: "verse1", line: 1, chord: "C#m", beats: 4, text: "♪ línea 1", hint: "Línea 1 · cambia a C#m" },
+    { sec: "verse1", line: 2, chord: "Bm", beats: 4, text: "♪ línea 2", hint: "Línea 2 · inicio" },
+    { sec: "verse1", line: 2, chord: "D", beats: 4, text: "♪ línea 2", hint: "Línea 2 · cambia a D" },
+    { sec: "verse1", line: 3, chord: "A", beats: 4, text: "♪ línea 3", hint: "Línea 3 · inicio" },
+    { sec: "verse1", line: 3, chord: "C#m", beats: 4, text: "♪ línea 3", hint: "Línea 3 · cambia a C#m" },
+    { sec: "verse1", line: 4, chord: "Bm", beats: 4, text: "♪ línea 4", hint: "Línea 4 · inicio" },
+    { sec: "verse1", line: 4, chord: "D", beats: 4, text: "♪ línea 4", hint: "Línea 4 · cambia a D" },
+
+    // PRE1
+    { sec: "pre1", line: 5, chord: "F#m", beats: 2, text: "♪ línea 5", hint: "Línea 5 · inicio" },
+    { sec: "pre1", line: 5, chord: "C#m", beats: 2, text: "♪ línea 5", hint: "Línea 5 · cambia a C#m" },
+    { sec: "pre1", line: 5, chord: "D", beats: 2, text: "♪ línea 5", hint: "Línea 5 · cambia a D" },
+    { sec: "pre1", line: 5, chord: "A", beats: 2, text: "♪ línea 5", hint: "Línea 5 · cambia a A" },
+    { sec: "pre1", line: 6, chord: "F#m", beats: 2, text: "♪ línea 6", hint: "Línea 6 · inicio" },
+    { sec: "pre1", line: 6, chord: "C#m", beats: 2, text: "♪ línea 6", hint: "Línea 6 · cambia a C#m" },
+    { sec: "pre1", line: 6, chord: "D", beats: 2, text: "♪ línea 6", hint: "Línea 6 · cambia a D" },
+    { sec: "pre1", line: 6, chord: "E7", beats: 2, text: "♪ línea 6", hint: "Línea 6 · cambia a E7" },
+    { sec: "pre1", line: 7, chord: "F#m", beats: 2, text: "♪ línea 7", hint: "Línea 7 · inicio" },
+    { sec: "pre1", line: 7, chord: "C#m", beats: 2, text: "♪ línea 7", hint: "Línea 7 · cambia a C#m" },
+    { sec: "pre1", line: 7, chord: "D", beats: 2, text: "♪ línea 7", hint: "Línea 7 · cambia a D" },
+    { sec: "pre1", line: 7, chord: "A", beats: 2, text: "♪ línea 7", hint: "Línea 7 · cambia a A" },
+    { sec: "pre1", line: 8, chord: "F#m", beats: 2, text: "♪ línea 8", hint: "Línea 8 · inicio" },
+    { sec: "pre1", line: 8, chord: "C#m", beats: 2, text: "♪ línea 8", hint: "Línea 8 · cambia a C#m" },
+    { sec: "pre1", line: 8, chord: "D", beats: 2, text: "♪ línea 8", hint: "Línea 8 · cambia a D" },
+    { sec: "pre1", line: 8, chord: "E7", beats: 2, text: "♪ línea 8", hint: "Línea 8 · cambia a E7" },
+
+    // CHORUS1
+    { sec: "chorus1", line: 9, chord: "D", beats: 2, text: "♪ línea 9", hint: "Línea 9 · inicio" },
+    { sec: "chorus1", line: 9, chord: "E7", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a E7" },
+    { sec: "chorus1", line: 9, chord: "C#m", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a C#m" },
+    { sec: "chorus1", line: 9, chord: "F#m", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a F#m" },
+    { sec: "chorus1", line: 10, chord: "D", beats: 2, text: "♪ línea 10", hint: "Línea 10 · inicio" },
+    { sec: "chorus1", line: 10, chord: "E7", beats: 2, text: "♪ línea 10", hint: "Línea 10 · cambia a E7" },
+    { sec: "chorus1", line: 10, chord: "A", beats: 4, text: "♪ línea 10", hint: "Línea 10 · cambia a A" },
+    { sec: "chorus1", line: 11, chord: "D", beats: 2, text: "♪ línea 11", hint: "Línea 11 · inicio" },
+    { sec: "chorus1", line: 11, chord: "E7", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a E7" },
+    { sec: "chorus1", line: 11, chord: "C#m", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a C#m" },
+    { sec: "chorus1", line: 11, chord: "F#m", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a F#m" },
+    { sec: "chorus1", line: 12, chord: "D", beats: 2, text: "♪ línea 12", hint: "Línea 12 · inicio" },
+    { sec: "chorus1", line: 12, chord: "E7", beats: 2, text: "♪ línea 12", hint: "Línea 12 · cambia a E7" },
+    { sec: "chorus1", line: 12, chord: "A", beats: 4, text: "♪ línea 12", hint: "Línea 12 · cambia a A" },
+
+    // VERSE2
+    { sec: "verse2", line: 13, chord: "A", beats: 4, text: "♪ línea 13", hint: "Línea 13 · inicio" },
+    { sec: "verse2", line: 13, chord: "C#m", beats: 4, text: "♪ línea 13", hint: "Línea 13 · cambia a C#m" },
+    { sec: "verse2", line: 14, chord: "Bm", beats: 4, text: "♪ línea 14", hint: "Línea 14 · inicio" },
+    { sec: "verse2", line: 14, chord: "D", beats: 4, text: "♪ línea 14", hint: "Línea 14 · cambia a D" },
+    { sec: "verse2", line: 15, chord: "A", beats: 4, text: "♪ línea 15", hint: "Línea 15 · inicio" },
+    { sec: "verse2", line: 15, chord: "C#m", beats: 4, text: "♪ línea 15", hint: "Línea 15 · cambia a C#m" },
+    { sec: "verse2", line: 16, chord: "Bm", beats: 4, text: "♪ línea 16", hint: "Línea 16 · inicio" },
+    { sec: "verse2", line: 16, chord: "D", beats: 4, text: "♪ línea 16", hint: "Línea 16 · cambia a D" },
+
+    // PRE2
+    { sec: "pre2", line: 17, chord: "F#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · inicio" },
+    { sec: "pre2", line: 17, chord: "C#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a C#m" },
+    { sec: "pre2", line: 17, chord: "D", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a D" },
+    { sec: "pre2", line: 17, chord: "A", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a A" },
+    { sec: "pre2", line: 18, chord: "F#m", beats: 2, text: "♪ línea 18", hint: "Línea 18 · inicio" },
+    { sec: "pre2", line: 18, chord: "C#m", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a C#m" },
+    { sec: "pre2", line: 18, chord: "D", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a D" },
+    { sec: "pre2", line: 18, chord: "E7", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a E7" },
+    { sec: "pre2", line: 19, chord: "F#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · inicio" },
+    { sec: "pre2", line: 19, chord: "C#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a C#m" },
+    { sec: "pre2", line: 19, chord: "D", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a D" },
+    { sec: "pre2", line: 19, chord: "A", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a A" },
+    { sec: "pre2", line: 20, chord: "F#m", beats: 2, text: "♪ línea 20", hint: "Línea 20 · inicio" },
+    { sec: "pre2", line: 20, chord: "C#m", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a C#m" },
+    { sec: "pre2", line: 20, chord: "D", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a D" },
+    { sec: "pre2", line: 20, chord: "E7", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a E7" },
+
+    // CHORUS2
+    { sec: "chorus2", line: 21, chord: "D", beats: 2, text: "♪ línea 21", hint: "Línea 21 · inicio" },
+    { sec: "chorus2", line: 21, chord: "E7", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a E7" },
+    { sec: "chorus2", line: 21, chord: "C#m", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a C#m" },
+    { sec: "chorus2", line: 21, chord: "F#m", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a F#m" },
+    { sec: "chorus2", line: 22, chord: "D", beats: 2, text: "♪ línea 22", hint: "Línea 22 · inicio" },
+    { sec: "chorus2", line: 22, chord: "E7", beats: 2, text: "♪ línea 22", hint: "Línea 22 · cambia a E7" },
+    { sec: "chorus2", line: 22, chord: "A", beats: 4, text: "♪ línea 22", hint: "Línea 22 · cambia a A" },
+    { sec: "chorus2", line: 23, chord: "D", beats: 2, text: "♪ línea 23", hint: "Línea 23 · inicio" },
+    { sec: "chorus2", line: 23, chord: "E7", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a E7" },
+    { sec: "chorus2", line: 23, chord: "C#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a C#m" },
+    { sec: "chorus2", line: 23, chord: "F#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a F#m" },
+    { sec: "chorus2", line: 24, chord: "D", beats: 2, text: "♪ línea 24", hint: "Línea 24 · inicio" },
+    { sec: "chorus2", line: 24, chord: "E7", beats: 2, text: "♪ línea 24", hint: "Línea 24 · cambia a E7" },
+    { sec: "chorus2", line: 24, chord: "A", beats: 4, text: "♪ línea 24", hint: "Línea 24 · cambia a A" },
+
+    // CHORUS3
+    { sec: "chorus3", line: 25, chord: "D", beats: 2, text: "♪ línea 25", hint: "Línea 25 · inicio" },
+    { sec: "chorus3", line: 25, chord: "E7", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a E7" },
+    { sec: "chorus3", line: 25, chord: "C#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a C#m" },
+    { sec: "chorus3", line: 25, chord: "F#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a F#m" },
+    { sec: "chorus3", line: 26, chord: "D", beats: 2, text: "♪ línea 26", hint: "Línea 26 · inicio" },
+    { sec: "chorus3", line: 26, chord: "E7", beats: 2, text: "♪ línea 26", hint: "Línea 26 · cambia a E7" },
+    { sec: "chorus3", line: 26, chord: "A", beats: 4, text: "♪ línea 26", hint: "Línea 26 · cambia a A" },
+    { sec: "chorus3", line: 27, chord: "D", beats: 2, text: "♪ línea 27", hint: "Línea 27 · inicio" },
+    { sec: "chorus3", line: 27, chord: "E7", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a E7" },
+    { sec: "chorus3", line: 27, chord: "C#m", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a C#m" },
+    { sec: "chorus3", line: 27, chord: "F#m", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a F#m" },
+    { sec: "chorus3", line: 28, chord: "D", beats: 2, text: "♪ línea 28", hint: "Línea 28 · inicio" },
+    { sec: "chorus3", line: 28, chord: "E7", beats: 2, text: "♪ línea 28", hint: "Línea 28 · cambia a E7" },
+    { sec: "chorus3", line: 28, chord: "A", beats: 8, text: "♪ línea 28", hint: "Rasgueo final largo" }
+  ];
+
+  let currentChord = "A";
+  let audioCtx = null;
+  let isPlaying = false;
+  let timer = null;
+  let stepIndex = 0;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playChordAudio(chordKey) {
+    initAudio();
+    const chord = CHORDS[chordKey];
+    if (!chord) return;
+    const now = audioCtx.currentTime;
+
+    chord.frets.forEach((fret, i) => {
+      const freq = openFreqs[i] * Math.pow(2, fret / 12);
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now + i * 0.045);
+      gain.gain.setValueAtTime(0.001, now + i * 0.045);
+      gain.gain.linearRampToValueAtTime(0.22, now + i * 0.045 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.045 + 1.8);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now + i * 0.045);
+      osc.stop(now + i * 0.045 + 1.85);
+    });
+  }
+
+  function createChordSVG(chordKey, width = 140, height = 155) {
+    const c = CHORDS[chordKey];
+    const strings = ["G", "C", "E", "A"];
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 220 245">`;
+    for (let i = 0; i < 4; i++) {
+      const x = 40 + i * 46;
+      svg += `<text x="${x}" y="18" fill="#94a3b8" font-size="13" text-anchor="middle" font-weight="bold">${strings[i]}</text>`;
+      if (c.frets[i] === 0) svg += `<circle cx="${x}" cy="32" r="5.5" fill="none" stroke="#10b981" stroke-width="2.5"/>`;
+    }
+    svg += `<rect x="37" y="43" width="144" height="6" fill="#e2e8f0" rx="2"/>`;
+    for (let f = 1; f <= 4; f++) {
+      const y = 48 + f * 44;
+      svg += `<line x1="40" y1="${y}" x2="178" y2="${y}" stroke="#475569" stroke-width="2"/>`;
+      svg += `<text x="18" y="${y - 15}" fill="#64748b" font-size="12" text-anchor="middle">T${f}</text>`;
+    }
+    for (let i = 0; i < 4; i++) {
+      const x = 40 + i * 46;
+      svg += `<line x1="${x}" y1="48" x2="${x}" y2="224" stroke="#cbd5e1" stroke-width="${2.4 - i * 0.3}"/>`;
+    }
+    for (let i = 0; i < 4; i++) {
+      const fret = c.frets[i];
+      const finger = c.fingers[i];
+      if (fret > 0) {
+        const x = 40 + i * 46;
+        const y = 48 + (fret - 0.5) * 44;
+        const color = FINGER_COLORS[finger] || "#f59e0b";
+        svg += `<circle cx="${x}" cy="${y}" r="14" fill="${color}" stroke="#0f172a" stroke-width="2"/>`;
+        svg += `<text x="${x}" y="${y + 5}" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">${finger}</text>`;
+      }
+    }
+    svg += `</svg>`;
+    return svg;
+  }
+
+  function updateTooltipContent(chordKey) {
+    const c = CHORDS[chordKey];
+    document.getElementById("ftTitle").innerText = c.title;
+    document.getElementById("ftSvg").innerHTML = createChordSVG(chordKey, 160, 175);
+    document.getElementById("ftDesc").innerText = c.desc;
+  }
+
+  function positionTooltipAboveHud() {
+    const tt = document.getElementById("floatingTooltip");
+    const hudSvg = document.getElementById("hudSvg");
+    const rect = hudSvg.getBoundingClientRect();
+    const ttWidth = 210;
+    const ttHeight = 255;
+
+    let top = rect.top - ttHeight - 12;
+    if (top < 10) top = 10;
+
+    let left = rect.left;
+    if (left + ttWidth > window.innerWidth - 10) {
+      left = window.innerWidth - ttWidth - 10;
+    }
+
+    tt.style.top = `${top}px`;
+    tt.style.left = `${Math.max(10, left)}px`;
+  }
+
+  // Abre o cierra el Popover únicamente cuando se hace clic en el diagrama de la barra inferior
+  function toggleTooltipFromHud(e) {
+    e.stopPropagation();
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") {
+      hideTooltip();
+    } else {
+      updateTooltipContent(currentChord);
+      tt.style.display = "block";
+      positionTooltipAboveHud();
+    }
+  }
+
+  function hideTooltip() {
+    document.getElementById("floatingTooltip").style.display = "none";
+  }
+
+  function selectChord(chordKey, playSound = true) {
+    currentChord = chordKey;
+    const c = CHORDS[chordKey];
+
+    // Solo actualiza la barra inferior fija (HUD)
+    document.getElementById("hudTitle").innerText = c.title;
+    document.getElementById("hudDesc").innerText = c.desc;
+    document.getElementById("hudSvg").innerHTML = createChordSVG(chordKey, 76, 82);
+
+    document.querySelectorAll(".pill").forEach(el => {
+      el.classList.toggle("active", el.dataset.chord === chordKey);
+    });
+
+    // Si el Popover ya estaba abierto por el usuario, actualiza su contenido al nuevo acorde
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") {
+      updateTooltipContent(chordKey);
+    }
+
+    if (playSound) playChordAudio(chordKey);
+  }
+
+  function strumCurrent() { playChordAudio(currentChord); }
+
+  function buildUI() {
+    const selector = document.getElementById("chordSelector");
+    Object.keys(CHORDS).forEach(k => {
+      const btn = document.createElement("button");
+      btn.className = "pill";
+      btn.dataset.chord = k;
+      btn.innerText = k;
+      btn.onclick = () => selectChord(k, true);
+      selector.appendChild(btn);
+    });
+
+    SONG_MEASURES.forEach((m, idx) => {
+      const container = document.getElementById(m.sec);
+      const div = document.createElement("div");
+      div.className = "measure";
+      div.id = `m-${idx}`;
+      div.onclick = (e) => {
+        if (e.target.classList.contains("m-lyric")) return;
+        stepIndex = idx;
+        highlightMeasure(idx);
+        selectChord(m.chord, true);
+      };
+
+      let dots = "";
+      for (let b = 0; b < m.beats; b++) dots += `<div class="beat-dot"></div>`;
+
+      div.innerHTML = `
+        <div class="m-chord"><span>${m.chord}</span><span class="m-beats">${m.beats} tiempos</span></div>
+        <div class="m-lyric" contenteditable="true" spellcheck="false" id="lyric-${idx}">${m.text}</div>
+        <div class="m-hint">${m.hint}</div>
+        <div class="strum-bar">${dots}</div>
+      `;
+      container.appendChild(div);
+    });
+
+    selectChord("A", false);
+  }
+
+  function highlightMeasure(idx) {
+    document.querySelectorAll(".measure").forEach(el => el.classList.remove("playing"));
+    const target = document.getElementById(`m-${idx}`);
+    if (target) {
+      target.classList.add("playing");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
+
+  function togglePlay() {
+    const btn = document.getElementById("playBtn");
+    const hudBtn = document.getElementById("hudPlayBtn");
+    if (isPlaying) {
+      isPlaying = false;
+      clearTimeout(timer);
+      btn.innerText = "▶ Guía (86 BPM)";
+      hudBtn.innerText = "▶ Play";
+      return;
+    }
+    isPlaying = true;
+    btn.innerText = "⏸ Pausar";
+    hudBtn.innerText = "⏸ Pausa";
+    runStep();
+  }
+
+  function runStep() {
+    if (!isPlaying) return;
+    const item = SONG_MEASURES[stepIndex];
+    highlightMeasure(stepIndex);
+    selectChord(item.chord, true);
+    const beatDurationMs = (60 / BPM) * 1000;
+    const measureDuration = item.beats * beatDurationMs;
+    stepIndex = (stepIndex + 1) % SONG_MEASURES.length;
+    timer = setTimeout(runStep, measureDuration);
+  }
+
+  function openModal() { document.getElementById("lyricModal").classList.add("open"); }
+  function closeModal() { document.getElementById("lyricModal").classList.remove("open"); }
+
+  const LYRICS_KEY = "ukelele:somewhere-only-we-know:lyrics";
+
+  function splitWords(line, parts) {
+    if (!line) return Array(parts).fill("...");
+    const words = line.split(/\s+/);
+    const res = [];
+    let idx = 0;
+    for (let i = 0; i < parts; i++) {
+      const take = Math.ceil((words.length - idx) / (parts - i));
+      res.push(words.slice(idx, idx + take).join(" ") || "...");
+      idx += take;
+    }
+    return res;
+  }
+
+  // Reparte cada frase pegada entre las tarjetas que tienen ese número de frase
+  function distributeLyrics(lines) {
+    const lineCount = Math.max(...SONG_MEASURES.map(m => m.line));
+    for (let n = 1; n <= lineCount; n++) {
+      const idxs = SONG_MEASURES.map((m, i) => m.line === n ? i : -1).filter(i => i >= 0);
+      const chunks = splitWords(lines[n - 1] || "", idxs.length);
+      idxs.forEach((i, k) => { document.getElementById(`lyric-${i}`).innerText = chunks[k]; });
+    }
+  }
+
+  function applyBulkLyrics() {
+    const raw = document.getElementById("bulkText").value.trim();
+    if (!raw) return closeModal();
+
+    const lines = raw.split(/\r?\n/)
+      .map(l => l.replace(/\[.*?\]/g, "").trim())
+      .filter(l => l.length > 0);
+
+    distributeLyrics(lines);
+    try { localStorage.setItem(LYRICS_KEY, JSON.stringify(lines)); } catch (e) {}
+
+    closeModal();
+  }
+
+  window.addEventListener("resize", () => {
+    const tt = document.getElementById("floatingTooltip");
+    if (tt.style.display === "block") positionTooltipAboveHud();
+  });
+
+  buildUI();
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(LYRICS_KEY) || "null");
+    if (Array.isArray(saved)) {
+      distributeLyrics(saved);
+      document.getElementById("bulkText").value = saved.join("\n");
+    }
+  } catch (e) {}
+</script>
+</body>
+</html>
