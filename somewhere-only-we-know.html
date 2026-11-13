@@ -156,20 +156,23 @@
     <div class="section-title"><span>2. Pre-coro (líneas 5–8)</span> <small>4 acordes por línea, 2 tiempos cada uno</small></div>
     <div class="line-row" id="pre1"></div>
 
-    <div class="section-title"><span>3. Coro (líneas 9–12)</span> <small>Empieza en D</small></div>
-    <div class="line-row" id="chorus1"></div>
-
-    <div class="section-title"><span>4. Estrofa 2 (líneas 13–16)</span> <small>Igual que la Estrofa 1</small></div>
+    <div class="section-title"><span>3. Estrofa 2 (líneas 9–12)</span> <small>Igual que la Estrofa 1</small></div>
     <div class="line-row" id="verse2"></div>
 
-    <div class="section-title"><span>5. Pre-coro (líneas 17–20)</span> <small>Igual que el primer pre-coro</small></div>
+    <div class="section-title"><span>4. Pre-coro (líneas 13–16)</span> <small>Igual que el primer pre-coro</small></div>
     <div class="line-row" id="pre2"></div>
 
-    <div class="section-title"><span>6. Coro (líneas 21–24)</span> <small>Igual que el primer coro</small></div>
+    <div class="section-title"><span>5. Coro (líneas 17–21)</span> <small>Empieza en D</small></div>
+    <div class="line-row" id="chorus1"></div>
+
+    <div class="section-title"><span>6. Pre-coro (líneas 22–25)</span> <small>Igual que los anteriores</small></div>
+    <div class="line-row" id="pre3"></div>
+
+    <div class="section-title"><span>7. Coro corto (líneas 26–30)</span> <small>'So, why don't we go?' dos veces: D y E7</small></div>
     <div class="line-row" id="chorus2"></div>
 
-    <div class="section-title"><span>7. Coro final (líneas 25–28)</span> <small>Termina en A, más lento</small></div>
-    <div class="line-row" id="chorus3"></div>
+    <div class="section-title"><span>8. Final (líneas 31–36)</span> <small>Termina en A, más lento</small></div>
+    <div class="line-row" id="outro"></div>
   </div>
 </div>
 
@@ -203,7 +206,7 @@
   <div class="modal-box">
     <h3 style="margin:0; color:var(--accent);">Pegar Letra Completa</h3>
     <p style="font-size:0.8rem; color:var(--muted); margin:6px 0;">
-      Pega la letra con <b>una frase por línea</b>, en el orden de la canción y repitiendo los coros (28 líneas: el número de cada tarjeta indica su línea). Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
+      Pega la letra con <b>una frase por línea</b>, tal como aparece en la canción, con sus repeticiones (36 líneas: el número de cada tarjeta indica su línea). Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
     </p>
     <textarea id="bulkText" placeholder="Pega aquí la letra completa..."></textarea>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -258,81 +261,106 @@
     { sec: "pre1", line: 8, chord: "D", beats: 2, text: "♪ línea 8", hint: "Línea 8 · cambia a D" },
     { sec: "pre1", line: 8, chord: "E7", beats: 2, text: "♪ línea 8", hint: "Línea 8 · cambia a E7" },
 
-    // CHORUS1
-    { sec: "chorus1", line: 9, chord: "D", beats: 2, text: "♪ línea 9", hint: "Línea 9 · inicio" },
-    { sec: "chorus1", line: 9, chord: "E7", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a E7" },
-    { sec: "chorus1", line: 9, chord: "C#m", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a C#m" },
-    { sec: "chorus1", line: 9, chord: "F#m", beats: 2, text: "♪ línea 9", hint: "Línea 9 · cambia a F#m" },
-    { sec: "chorus1", line: 10, chord: "D", beats: 2, text: "♪ línea 10", hint: "Línea 10 · inicio" },
-    { sec: "chorus1", line: 10, chord: "E7", beats: 2, text: "♪ línea 10", hint: "Línea 10 · cambia a E7" },
-    { sec: "chorus1", line: 10, chord: "A", beats: 4, text: "♪ línea 10", hint: "Línea 10 · cambia a A" },
-    { sec: "chorus1", line: 11, chord: "D", beats: 2, text: "♪ línea 11", hint: "Línea 11 · inicio" },
-    { sec: "chorus1", line: 11, chord: "E7", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a E7" },
-    { sec: "chorus1", line: 11, chord: "C#m", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a C#m" },
-    { sec: "chorus1", line: 11, chord: "F#m", beats: 2, text: "♪ línea 11", hint: "Línea 11 · cambia a F#m" },
-    { sec: "chorus1", line: 12, chord: "D", beats: 2, text: "♪ línea 12", hint: "Línea 12 · inicio" },
-    { sec: "chorus1", line: 12, chord: "E7", beats: 2, text: "♪ línea 12", hint: "Línea 12 · cambia a E7" },
-    { sec: "chorus1", line: 12, chord: "A", beats: 4, text: "♪ línea 12", hint: "Línea 12 · cambia a A" },
-
     // VERSE2
-    { sec: "verse2", line: 13, chord: "A", beats: 4, text: "♪ línea 13", hint: "Línea 13 · inicio" },
-    { sec: "verse2", line: 13, chord: "C#m", beats: 4, text: "♪ línea 13", hint: "Línea 13 · cambia a C#m" },
-    { sec: "verse2", line: 14, chord: "Bm", beats: 4, text: "♪ línea 14", hint: "Línea 14 · inicio" },
-    { sec: "verse2", line: 14, chord: "D", beats: 4, text: "♪ línea 14", hint: "Línea 14 · cambia a D" },
-    { sec: "verse2", line: 15, chord: "A", beats: 4, text: "♪ línea 15", hint: "Línea 15 · inicio" },
-    { sec: "verse2", line: 15, chord: "C#m", beats: 4, text: "♪ línea 15", hint: "Línea 15 · cambia a C#m" },
-    { sec: "verse2", line: 16, chord: "Bm", beats: 4, text: "♪ línea 16", hint: "Línea 16 · inicio" },
-    { sec: "verse2", line: 16, chord: "D", beats: 4, text: "♪ línea 16", hint: "Línea 16 · cambia a D" },
+    { sec: "verse2", line: 9, chord: "A", beats: 4, text: "♪ línea 9", hint: "Línea 9 · inicio" },
+    { sec: "verse2", line: 9, chord: "C#m", beats: 4, text: "♪ línea 9", hint: "Línea 9 · cambia a C#m" },
+    { sec: "verse2", line: 10, chord: "Bm", beats: 4, text: "♪ línea 10", hint: "Línea 10 · inicio" },
+    { sec: "verse2", line: 10, chord: "D", beats: 4, text: "♪ línea 10", hint: "Línea 10 · cambia a D" },
+    { sec: "verse2", line: 11, chord: "A", beats: 4, text: "♪ línea 11", hint: "Línea 11 · inicio" },
+    { sec: "verse2", line: 11, chord: "C#m", beats: 4, text: "♪ línea 11", hint: "Línea 11 · cambia a C#m" },
+    { sec: "verse2", line: 12, chord: "Bm", beats: 4, text: "♪ línea 12", hint: "Línea 12 · inicio" },
+    { sec: "verse2", line: 12, chord: "D", beats: 4, text: "♪ línea 12", hint: "Línea 12 · cambia a D" },
 
     // PRE2
-    { sec: "pre2", line: 17, chord: "F#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · inicio" },
-    { sec: "pre2", line: 17, chord: "C#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a C#m" },
-    { sec: "pre2", line: 17, chord: "D", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a D" },
-    { sec: "pre2", line: 17, chord: "A", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a A" },
-    { sec: "pre2", line: 18, chord: "F#m", beats: 2, text: "♪ línea 18", hint: "Línea 18 · inicio" },
-    { sec: "pre2", line: 18, chord: "C#m", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a C#m" },
-    { sec: "pre2", line: 18, chord: "D", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a D" },
-    { sec: "pre2", line: 18, chord: "E7", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a E7" },
-    { sec: "pre2", line: 19, chord: "F#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · inicio" },
-    { sec: "pre2", line: 19, chord: "C#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a C#m" },
-    { sec: "pre2", line: 19, chord: "D", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a D" },
-    { sec: "pre2", line: 19, chord: "A", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a A" },
-    { sec: "pre2", line: 20, chord: "F#m", beats: 2, text: "♪ línea 20", hint: "Línea 20 · inicio" },
-    { sec: "pre2", line: 20, chord: "C#m", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a C#m" },
-    { sec: "pre2", line: 20, chord: "D", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a D" },
-    { sec: "pre2", line: 20, chord: "E7", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a E7" },
+    { sec: "pre2", line: 13, chord: "F#m", beats: 2, text: "♪ línea 13", hint: "Línea 13 · inicio" },
+    { sec: "pre2", line: 13, chord: "C#m", beats: 2, text: "♪ línea 13", hint: "Línea 13 · cambia a C#m" },
+    { sec: "pre2", line: 13, chord: "D", beats: 2, text: "♪ línea 13", hint: "Línea 13 · cambia a D" },
+    { sec: "pre2", line: 13, chord: "A", beats: 2, text: "♪ línea 13", hint: "Línea 13 · cambia a A" },
+    { sec: "pre2", line: 14, chord: "F#m", beats: 2, text: "♪ línea 14", hint: "Línea 14 · inicio" },
+    { sec: "pre2", line: 14, chord: "C#m", beats: 2, text: "♪ línea 14", hint: "Línea 14 · cambia a C#m" },
+    { sec: "pre2", line: 14, chord: "D", beats: 2, text: "♪ línea 14", hint: "Línea 14 · cambia a D" },
+    { sec: "pre2", line: 14, chord: "E7", beats: 2, text: "♪ línea 14", hint: "Línea 14 · cambia a E7" },
+    { sec: "pre2", line: 15, chord: "F#m", beats: 2, text: "♪ línea 15", hint: "Línea 15 · inicio" },
+    { sec: "pre2", line: 15, chord: "C#m", beats: 2, text: "♪ línea 15", hint: "Línea 15 · cambia a C#m" },
+    { sec: "pre2", line: 15, chord: "D", beats: 2, text: "♪ línea 15", hint: "Línea 15 · cambia a D" },
+    { sec: "pre2", line: 15, chord: "A", beats: 2, text: "♪ línea 15", hint: "Línea 15 · cambia a A" },
+    { sec: "pre2", line: 16, chord: "F#m", beats: 2, text: "♪ línea 16", hint: "Línea 16 · inicio" },
+    { sec: "pre2", line: 16, chord: "C#m", beats: 2, text: "♪ línea 16", hint: "Línea 16 · cambia a C#m" },
+    { sec: "pre2", line: 16, chord: "D", beats: 2, text: "♪ línea 16", hint: "Línea 16 · cambia a D" },
+    { sec: "pre2", line: 16, chord: "E7", beats: 2, text: "♪ línea 16", hint: "Línea 16 · cambia a E7" },
+
+    // CHORUS1
+    { sec: "chorus1", line: 17, chord: "D", beats: 2, text: "♪ línea 17", hint: "Línea 17 · inicio" },
+    { sec: "chorus1", line: 17, chord: "E7", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a E7" },
+    { sec: "chorus1", line: 17, chord: "C#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a C#m" },
+    { sec: "chorus1", line: 17, chord: "F#m", beats: 2, text: "♪ línea 17", hint: "Línea 17 · cambia a F#m" },
+    { sec: "chorus1", line: 18, chord: "D", beats: 2, text: "♪ línea 18", hint: "Línea 18 · inicio" },
+    { sec: "chorus1", line: 18, chord: "E7", beats: 2, text: "♪ línea 18", hint: "Línea 18 · cambia a E7" },
+    { sec: "chorus1", line: 18, chord: "A", beats: 4, text: "♪ línea 18", hint: "Línea 18 · cambia a A" },
+    { sec: "chorus1", line: 19, chord: "D", beats: 2, text: "♪ línea 19", hint: "Línea 19 · inicio" },
+    { sec: "chorus1", line: 19, chord: "E7", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a E7" },
+    { sec: "chorus1", line: 19, chord: "C#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a C#m" },
+    { sec: "chorus1", line: 19, chord: "F#m", beats: 2, text: "♪ línea 19", hint: "Línea 19 · cambia a F#m" },
+    { sec: "chorus1", line: 20, chord: "D", beats: 2, text: "♪ línea 20", hint: "Línea 20 · inicio" },
+    { sec: "chorus1", line: 20, chord: "E7", beats: 2, text: "♪ línea 20", hint: "Línea 20 · cambia a E7" },
+    { sec: "chorus1", line: 20, chord: "A", beats: 4, text: "♪ línea 20", hint: "Línea 20 · cambia a A" },
+    { sec: "chorus1", line: 21, chord: "D", beats: 2, text: "♪ línea 21", hint: "Línea 21 · inicio" },
+    { sec: "chorus1", line: 21, chord: "E7", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a E7" },
+    { sec: "chorus1", line: 21, chord: "A", beats: 4, text: "♪ línea 21", hint: "Línea 21 · cambia a A" },
+
+    // PRE3
+    { sec: "pre3", line: 22, chord: "F#m", beats: 2, text: "♪ línea 22", hint: "Línea 22 · inicio" },
+    { sec: "pre3", line: 22, chord: "C#m", beats: 2, text: "♪ línea 22", hint: "Línea 22 · cambia a C#m" },
+    { sec: "pre3", line: 22, chord: "D", beats: 2, text: "♪ línea 22", hint: "Línea 22 · cambia a D" },
+    { sec: "pre3", line: 22, chord: "A", beats: 2, text: "♪ línea 22", hint: "Línea 22 · cambia a A" },
+    { sec: "pre3", line: 23, chord: "F#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · inicio" },
+    { sec: "pre3", line: 23, chord: "C#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a C#m" },
+    { sec: "pre3", line: 23, chord: "D", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a D" },
+    { sec: "pre3", line: 23, chord: "E7", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a E7" },
+    { sec: "pre3", line: 24, chord: "F#m", beats: 2, text: "♪ línea 24", hint: "Línea 24 · inicio" },
+    { sec: "pre3", line: 24, chord: "C#m", beats: 2, text: "♪ línea 24", hint: "Línea 24 · cambia a C#m" },
+    { sec: "pre3", line: 24, chord: "D", beats: 2, text: "♪ línea 24", hint: "Línea 24 · cambia a D" },
+    { sec: "pre3", line: 24, chord: "A", beats: 2, text: "♪ línea 24", hint: "Línea 24 · cambia a A" },
+    { sec: "pre3", line: 25, chord: "F#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · inicio" },
+    { sec: "pre3", line: 25, chord: "C#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a C#m" },
+    { sec: "pre3", line: 25, chord: "D", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a D" },
+    { sec: "pre3", line: 25, chord: "E7", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a E7" },
 
     // CHORUS2
-    { sec: "chorus2", line: 21, chord: "D", beats: 2, text: "♪ línea 21", hint: "Línea 21 · inicio" },
-    { sec: "chorus2", line: 21, chord: "E7", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a E7" },
-    { sec: "chorus2", line: 21, chord: "C#m", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a C#m" },
-    { sec: "chorus2", line: 21, chord: "F#m", beats: 2, text: "♪ línea 21", hint: "Línea 21 · cambia a F#m" },
-    { sec: "chorus2", line: 22, chord: "D", beats: 2, text: "♪ línea 22", hint: "Línea 22 · inicio" },
-    { sec: "chorus2", line: 22, chord: "E7", beats: 2, text: "♪ línea 22", hint: "Línea 22 · cambia a E7" },
-    { sec: "chorus2", line: 22, chord: "A", beats: 4, text: "♪ línea 22", hint: "Línea 22 · cambia a A" },
-    { sec: "chorus2", line: 23, chord: "D", beats: 2, text: "♪ línea 23", hint: "Línea 23 · inicio" },
-    { sec: "chorus2", line: 23, chord: "E7", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a E7" },
-    { sec: "chorus2", line: 23, chord: "C#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a C#m" },
-    { sec: "chorus2", line: 23, chord: "F#m", beats: 2, text: "♪ línea 23", hint: "Línea 23 · cambia a F#m" },
-    { sec: "chorus2", line: 24, chord: "D", beats: 2, text: "♪ línea 24", hint: "Línea 24 · inicio" },
-    { sec: "chorus2", line: 24, chord: "E7", beats: 2, text: "♪ línea 24", hint: "Línea 24 · cambia a E7" },
-    { sec: "chorus2", line: 24, chord: "A", beats: 4, text: "♪ línea 24", hint: "Línea 24 · cambia a A" },
+    { sec: "chorus2", line: 26, chord: "D", beats: 2, text: "♪ línea 26", hint: "Línea 26 · inicio" },
+    { sec: "chorus2", line: 26, chord: "E7", beats: 2, text: "♪ línea 26", hint: "Línea 26 · cambia a E7" },
+    { sec: "chorus2", line: 26, chord: "C#m", beats: 2, text: "♪ línea 26", hint: "Línea 26 · cambia a C#m" },
+    { sec: "chorus2", line: 26, chord: "F#m", beats: 2, text: "♪ línea 26", hint: "Línea 26 · cambia a F#m" },
+    { sec: "chorus2", line: 27, chord: "D", beats: 2, text: "♪ línea 27", hint: "Línea 27 · inicio" },
+    { sec: "chorus2", line: 27, chord: "E7", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a E7" },
+    { sec: "chorus2", line: 27, chord: "A", beats: 4, text: "♪ línea 27", hint: "Línea 27 · cambia a A" },
+    { sec: "chorus2", line: 28, chord: "D", beats: 2, text: "♪ línea 28", hint: "Línea 28 · inicio" },
+    { sec: "chorus2", line: 28, chord: "E7", beats: 2, text: "♪ línea 28", hint: "Línea 28 · cambia a E7" },
+    { sec: "chorus2", line: 28, chord: "C#m", beats: 2, text: "♪ línea 28", hint: "Línea 28 · cambia a C#m" },
+    { sec: "chorus2", line: 28, chord: "F#m", beats: 2, text: "♪ línea 28", hint: "Línea 28 · cambia a F#m" },
+    { sec: "chorus2", line: 29, chord: "D", beats: 4, text: "♪ línea 29", hint: "Línea 29 · inicio" },
+    { sec: "chorus2", line: 29, chord: "E7", beats: 4, text: "♪ línea 29", hint: "Línea 29 · cambia a E7" },
+    { sec: "chorus2", line: 30, chord: "D", beats: 4, text: "♪ línea 30", hint: "Línea 30 · inicio" },
+    { sec: "chorus2", line: 30, chord: "E7", beats: 4, text: "♪ línea 30", hint: "Línea 30 · cambia a E7" },
 
-    // CHORUS3
-    { sec: "chorus3", line: 25, chord: "D", beats: 2, text: "♪ línea 25", hint: "Línea 25 · inicio" },
-    { sec: "chorus3", line: 25, chord: "E7", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a E7" },
-    { sec: "chorus3", line: 25, chord: "C#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a C#m" },
-    { sec: "chorus3", line: 25, chord: "F#m", beats: 2, text: "♪ línea 25", hint: "Línea 25 · cambia a F#m" },
-    { sec: "chorus3", line: 26, chord: "D", beats: 2, text: "♪ línea 26", hint: "Línea 26 · inicio" },
-    { sec: "chorus3", line: 26, chord: "E7", beats: 2, text: "♪ línea 26", hint: "Línea 26 · cambia a E7" },
-    { sec: "chorus3", line: 26, chord: "A", beats: 4, text: "♪ línea 26", hint: "Línea 26 · cambia a A" },
-    { sec: "chorus3", line: 27, chord: "D", beats: 2, text: "♪ línea 27", hint: "Línea 27 · inicio" },
-    { sec: "chorus3", line: 27, chord: "E7", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a E7" },
-    { sec: "chorus3", line: 27, chord: "C#m", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a C#m" },
-    { sec: "chorus3", line: 27, chord: "F#m", beats: 2, text: "♪ línea 27", hint: "Línea 27 · cambia a F#m" },
-    { sec: "chorus3", line: 28, chord: "D", beats: 2, text: "♪ línea 28", hint: "Línea 28 · inicio" },
-    { sec: "chorus3", line: 28, chord: "E7", beats: 2, text: "♪ línea 28", hint: "Línea 28 · cambia a E7" },
-    { sec: "chorus3", line: 28, chord: "A", beats: 8, text: "♪ línea 28", hint: "Rasgueo final largo" }
+    // OUTRO
+    { sec: "outro", line: 31, chord: "D", beats: 4, text: "♪ línea 31", hint: "Línea 31 · inicio" },
+    { sec: "outro", line: 31, chord: "E7", beats: 4, text: "♪ línea 31", hint: "Línea 31 · cambia a E7" },
+    { sec: "outro", line: 32, chord: "C#m", beats: 4, text: "♪ línea 32", hint: "Línea 32 · inicio" },
+    { sec: "outro", line: 32, chord: "F#m", beats: 4, text: "♪ línea 32", hint: "Línea 32 · cambia a F#m" },
+    { sec: "outro", line: 33, chord: "D", beats: 2, text: "♪ línea 33", hint: "Línea 33 · inicio" },
+    { sec: "outro", line: 33, chord: "E7", beats: 2, text: "♪ línea 33", hint: "Línea 33 · cambia a E7" },
+    { sec: "outro", line: 33, chord: "C#m", beats: 2, text: "♪ línea 33", hint: "Línea 33 · cambia a C#m" },
+    { sec: "outro", line: 33, chord: "F#m", beats: 2, text: "♪ línea 33", hint: "Línea 33 · cambia a F#m" },
+    { sec: "outro", line: 34, chord: "D", beats: 2, text: "♪ línea 34", hint: "Línea 34 · inicio" },
+    { sec: "outro", line: 34, chord: "E7", beats: 2, text: "♪ línea 34", hint: "Línea 34 · cambia a E7" },
+    { sec: "outro", line: 34, chord: "A", beats: 4, text: "♪ línea 34", hint: "Línea 34 · cambia a A" },
+    { sec: "outro", line: 35, chord: "D", beats: 2, text: "♪ línea 35", hint: "Línea 35 · inicio" },
+    { sec: "outro", line: 35, chord: "E7", beats: 2, text: "♪ línea 35", hint: "Línea 35 · cambia a E7" },
+    { sec: "outro", line: 35, chord: "A", beats: 4, text: "♪ línea 35", hint: "Línea 35 · cambia a A" },
+    { sec: "outro", line: 36, chord: "D", beats: 2, text: "♪ línea 36", hint: "Línea 36 · inicio" },
+    { sec: "outro", line: 36, chord: "E7", beats: 2, text: "♪ línea 36", hint: "Línea 36 · cambia a E7" },
+    { sec: "outro", line: 36, chord: "A", beats: 8, text: "♪ línea 36", hint: "Rasgueo final largo" }
   ];
 
   let currentChord = "A";
