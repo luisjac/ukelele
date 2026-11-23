@@ -26,6 +26,8 @@
     button { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.82rem; }
     button:hover { filter: brightness(1.1); }
     button.secondary { background: #334155; color: var(--text); }
+    a.link-btn { background: #334155; color: var(--text); padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 0.82rem; text-decoration: none; }
+    a.link-btn:hover { filter: brightness(1.1); }
     .legend { display: flex; gap: 12px; flex-wrap: wrap; background: var(--card); padding: 10px 14px; border-radius: 10px; margin-bottom: 15px; font-size: 0.78rem; align-items: center; }
     .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 4px; }
 
@@ -136,6 +138,7 @@
       <button id="playBtn" onclick="togglePlay()">▶ Guía (86 BPM)</button>
       <button class="secondary" onclick="strumCurrent()">🔊 Rasguear</button>
       <button class="secondary" onclick="openModal()">✏️ Pegar Letra</button>
+      <a class="link-btn" href="https://www.musixmatch.com/lyrics/Keane/Somewhere-Only-We-Know" target="_blank" rel="noopener">🎤 Ver letra oficial</a>
     </div>
   </header>
 
@@ -206,7 +209,7 @@
   <div class="modal-box">
     <h3 style="margin:0; color:var(--accent);">Pegar Letra Completa</h3>
     <p style="font-size:0.8rem; color:var(--muted); margin:6px 0;">
-      Pega la letra con <b>una frase por línea</b>, tal como aparece en la canción, con sus repeticiones (36 líneas: el número de cada tarjeta indica su línea). Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
+      Pega la letra con <b>una frase por línea</b>, tal como aparece en la canción, con sus repeticiones (36 líneas: el número de cada tarjeta indica su línea). ¿No la tienes? <a href="https://www.musixmatch.com/lyrics/Keane/Somewhere-Only-We-Know" target="_blank" rel="noopener" style="color:var(--accent);">Ábrela en Musixmatch</a> y cópiala. Cada frase se reparte en sus tarjetas y queda guardada en este navegador:
     </p>
     <textarea id="bulkText" placeholder="Pega aquí la letra completa..."></textarea>
     <div style="display:flex; gap:8px; justify-content:flex-end;">
